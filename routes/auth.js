@@ -4,12 +4,17 @@ const bcryptjs = require("bcryptjs");
 const authRouter = express.Router();
 const jwt = require("jsonwebtoken");
 const auth = require("../middlewares/auth");
+const vendingzones = require("../models/vendingzones");
 
 //Sign Up
 authRouter.post("/api/signup", async (req, res) => {
     try {
-        const {vendorid , vendorcategory , name, address, dob, gender, phone, aadharno, pancardno,password ,  
-                passport, electionid, mcgmlicense, aadharcard, pancard, shoplocation, isapproved} = req.body;
+        const {vendorId , vendorCategory , name, address, dob, gender, phone, aadharNo, panCardNo,password ,  
+          isPassport, isElectionid, isMcgmLicense, aadharcardImageUrl, pancardImageUrl, shopLocationAddress, 
+          shopLocationLat,
+          shopLocationLong,
+          vendingZoneIdApplied,
+          shopCity, isApproved} = req.body;
         
         const existingVendor = await Vendor.findOne({ phone });
         if (existingVendor) {
@@ -21,25 +26,30 @@ authRouter.post("/api/signup", async (req, res) => {
         const hashedPassword = await bcryptjs.hash(password, 8);
        
         let vendor = new Vendor({
-          vendorid , 
+          vendorId , 
             name,
             dob,
             gender,
             address,
             password: hashedPassword,
             phone,
-            aadharno,
-            pancardno,
-            passport,
-            electionid,
-            mcgmlicense,
-            aadharcard,
-            pancard,
-            shoplocation, 
-            vendorcategory, 
-            isapproved
+            aadharNo,
+            panCardNo,
+            isPassport,
+            isElectionid,
+            isMcgmLicense,
+            aadharcardImageUrl,
+            pancardImageUrl,
+            shopLocationAddress, 
+            shopLocationLat,
+            shopLocationLong,
+            vendingZoneIdApplied,
+            shopCity,
+            vendorCategory, 
+            isApproved
         });
         vendor = await vendor.save();
+        // await vendingzones.findOneAndUpdate({vendingZoneId: vendingZoneIdApplied}, {"$push": {vendorIdList: {vendorId: vendorId, status: "pending"}}}, {new: true});
         res.json(vendor);
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -69,7 +79,7 @@ authRouter.post("/api/login", async (req, res) =>{
     }
 });
 
-authRouter.post("/tokenIsValid", async (req, res) => {
+authRouter.post("/api/tokenIsValid", async (req, res) => {
     try {
       const token = req.header("x-auth-token");
       if (!token) return res.json(false);
@@ -87,7 +97,37 @@ authRouter.post("/tokenIsValid", async (req, res) => {
   // get user data
   authRouter.get("/getuserdata", auth, async (req, res) => {
     const vendor = await Vendor.findById(req.vendor);
-    res.json({ ...vendor._doc, token: req.token });
+    res.json({...vendor._doc ,  token: req.token });
   });
+
+  //get approved vendors
+  authRouter.get("/api/getvendors/approved" , async (req, res) =>  { 
+    try {
+        let vendors = await Vendor.find({isApproved: "approved"}); 
+        res.status(200).json(vendors); 
+    }catch(e){
+        res.status(500).json({e : e.message}); 
+    }
+})
+
+// get vendors by id
+authRouter.get("/api/getvendors/:id" , async (req, res) =>  {
+    try {
+        const {id} = req.params ; 
+        let vendor = await Vendor.find({vendorId: id});
+        res.status(200).json(vendor[0]);
+    }catch(e){
+        res.status(500).json({e : e.message});
+    } 
+} )
+//get pending vendors
+authRouter.get("/api/getvendors/pending" , async (req, res) =>  { 
+  try {
+      let vendors = await Vendor.find({isApproved: "pending"}); 
+      res.status(200).json(vendors); 
+  }catch(e){
+      res.status(500).json({e : e.message}); 
+  }
+})
 
   module.exports = authRouter;
