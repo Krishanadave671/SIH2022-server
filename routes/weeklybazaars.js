@@ -1,5 +1,6 @@
 const express = require('express');
 const bazzarsrouter = express.Router(); 
+const Vendors = require("../models/vendor_details");
 const Bazzars = require("../models/weeklybazzar");
 
 // add bazzar
@@ -39,6 +40,41 @@ bazzarsrouter.get("/api/getbazzar/:bazzarId", async (req, res) => {
     }
 });
 
+// register for weekly bazaars 
+bazzarsrouter.post("/api/registerforbazzar", async (req, res) => {
+    try {
+        
+       const {bazzarId , vendorId} = req.body;
+       let bazzars  = await Bazzars.findOneAndUpdate({bazzarId : bazzarId},{ "$push": {vendorRegisteredList: {vendorId: vendorId}}}, {new: true});
+       await Vendors.findOneAndUpdate({vendorId : vendorId},{ "$push": {weeklyBazzarList: {bazzarId: bazzarId}}}, {new: true});
+         res.status(200).json(bazzars);
+    }catch(e){
+        res.status(500).json({e : e.message});
+    }
+});
 
+// approved bazzar by admin
+bazzarsrouter.post("/api/approvebazzar", async (req, res) => {
+    try {
+        const {bazzarId , vendorId} = req.body;
+        let bazzars  = await Bazzars.findOneAndUpdate({bazzarId : bazzarId , 'vendorRegisteredList.vendorId': vendorId }, {   $set: {'vendorRegisteredList.$.vendorId': vendorId , 'vendorRegisteredList.$.vendorstatus': "approved"}}, {new: true});
+        await Vendors.findOneAndUpdate({vendorId : vendorId ,}, { $set: {'weeklyBazzarList.$.bazzarId': bazzarId , 'weeklyBazzarList.$.status': "approved"}});
+        return res.status(200).json(bazzars);
+    }catch(e){
+        res.status(500).json({e : e.message});
+    }
+});
+
+// reject bazzar by admin
+bazzarsrouter.post("/api/rejectbazzar", async (req, res) => {
+    try {
+        const {bazzarId , vendorId} = req.body;
+        let bazzars  = await Bazzars.findOneAndUpdate({bazzarId : bazzarId , 'vendorRegisteredList.vendorId': vendorId }, {   $set: {'vendorRegisteredList.$.vendorId': vendorId , 'vendorRegisteredList.$.vendorstatus': "rejected"}}, {new: true});
+        await Vendors.findOneAndUpdate({vendorId : vendorId }, { $set: {'weeklyBazzarList.$.bazzarId': bazzarId , 'weeklyBazzarList.$.status': "rejected"}});
+        return res.status(200).json({message : "bazzar rejected"});
+    }catch(e){
+        res.status(500).json({e : e.message});
+    }
+});
 
 module.exports = bazzarsrouter ; 
