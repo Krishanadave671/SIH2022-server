@@ -123,8 +123,7 @@ const vendorDetails = mongoose.Schema({
     },
     weeklyBazzarList: [{
       "bazzarId" : {
-        type: String, 
-        unique : true  
+        type: String,  
       },
       "bazzarName" : {
         type: String,
