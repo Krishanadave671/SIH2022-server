@@ -62,6 +62,10 @@ const vendorDetails = mongoose.Schema({
             message: '{VALUE} is not a valid Pancard number!'
         }
     },
+    checkstatus : {
+        type : Boolean ,
+        default : false 
+    }, 
     isPassport: {
         type: Boolean,
         required: true
