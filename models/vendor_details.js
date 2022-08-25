@@ -62,10 +62,6 @@ const vendorDetails = mongoose.Schema({
             message: '{VALUE} is not a valid Pancard number!'
         }
     },
-    checkstatus : {
-        type : Boolean ,
-        default : false 
-    }, 
     isPassport: {
         type: Boolean,
         required: true
@@ -146,7 +142,6 @@ const vendorDetails = mongoose.Schema({
       },
       "status" : {
         type: String,
-     
         default : "pending"
       }
     }], 
@@ -159,8 +154,27 @@ const vendorDetails = mongoose.Schema({
         required : true ,
         trim : true
     }, 
- 
-});
+
+    currentLat : {
+        type : Number , 
+    
+
+    }, 
+    currentLong : {
+        type : Number , 
+    }, 
+    inTime : {
+        type : [String] ,
+
+    }, 
+    outTime : {
+        type : [String] ,
+    },
+    inOrOut : {
+        type : Boolean ,
+        default : true 
+    }
+})
 
 const Vendor = mongoose.model("Vendor", vendorDetails);
 module.exports = Vendor;
