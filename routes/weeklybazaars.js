@@ -52,9 +52,9 @@ bazzarsrouter.post("/api/registerforbazzar", async (req, res) => {
               res.status(200).json({message : "You are already registered for this bazzar"});
               return; 
        } 
-        await Bazzars.findOneAndUpdate({bazzarId : bazzarId},{ "$push": {vendorRegisteredList: {vendorId: vendorId}}}, {new: true});
+        let bazaars = await Bazzars.findOneAndUpdate({bazzarId : bazzarId},{ "$push": {vendorRegisteredList: {vendorId: vendorId}}}, {new: true});
          let vendor = await Vendors.findOneAndUpdate({vendorId : vendorId},{ "$push": {weeklyBazzarList: {bazzarId: bazzarId, bazzarName: bazzarName}}}, {new: true});
-         res.status(200).json(vendor);
+         res.status(200).json(bazaars);
     }catch(e){
         res.status(500).json({e : e.message});
     }
