@@ -99,4 +99,12 @@ bazzarsrouter.get("/api/getallpendingbazaars", async (req, res) => {
         res.status(500).json({e : e.message});
     }
 } );
+bazzarsrouter.get("/api/getallbazaars", async (req, res) => {
+    try {
+        let bazzars = await Bazzars.find({});
+        res.status(200).json(bazzars);
+    }catch(e){
+        res.status(500).json({e : e.message});
+    }
+} );
 module.exports = bazzarsrouter ; 
