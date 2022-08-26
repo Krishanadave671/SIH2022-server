@@ -118,9 +118,10 @@ const vendorDetails = mongoose.Schema({
         type: [complaints]
     },
     reviewList: {
-        type : [reviews]
+        type: [reviews]
     },
     weeklyBazzarList: [{
+<<<<<<< HEAD
       "bazzarId" : {
         type: String,  
       },
@@ -155,25 +156,59 @@ const vendorDetails = mongoose.Schema({
         required : true ,
         trim : true
     }, 
+=======
+        "bazzarId": {
+            type: String,
+        },
+        "bazzarName": {
+            type: String,
+>>>>>>> 9de13bbb1bd3c000cdc07ca3ffa5c5cd3d3ed60c
 
-    currentLat : {
-        type : Number , 
-    
+        },
+        "status": {
+            type: String,
+            default: "pending"
+        }
+    }],
+    schemeList: [{
+        "schemeId": {
+            type: String,
+            unique: true,
 
-    }, 
-    currentLong : {
-        type : Number , 
-    }, 
-    inTime : {
-        type : [String] ,
-
-    }, 
-    outTime : {
-        type : [String] ,
+        },
+        "status": {
+            type: String,
+            default: "pending"
+        }
+    }],
+    vendorCategory: {
+        type: String,
+        required: true
     },
-    inOrOut : {
-        type : Boolean ,
-        default : true 
+    shopName: {
+        type: String,
+        required: true,
+        trim: true
+    },
+
+    currentLat: {
+        type: Number,
+
+
+    },
+    currentLong: {
+        type: Number,
+    },
+    inTime: {
+        type: [String],
+
+    },
+    outTime: {
+        type: [String],
+    },
+    inOrOut: {
+        type: Boolean,
+        default: true
     }
 })
 
